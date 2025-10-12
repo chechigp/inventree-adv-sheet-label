@@ -23,12 +23,17 @@ A label printing plugin for [InvenTree](https://inventree.org) which provides su
 
 ## Installation
 
-> Note:
-> This plugin currently supports the following InvenTree versions:
+> [!NOTE]
+> The latest version of this plugin currently supports the following InvenTree versions:
+> - **1.0.x** (tested with version **1.0.5**)
+> 
+> For older InvenTree versions, use version `1.2.2`, which supports the following InvenTree versions:
 > - **0.15.x**
 > - **0.16.x** (tested with version **0.16.5**)
 > - **0.17.x** (tested with version **0.17.14**)
-> Some older or newer versions might also work, but have not been tested. 
+> Some even older or newer versions might also work, but have not been tested. 
+> 
+> If you are having trouble installing, see [Common Issues](#common-issues) for possible solutions or create an issue.
 
 The simplest way of installing is by using the ```Install Plugin``` button on the InvenTree ```Plugin Settings``` page and then entering the package name:
 
@@ -115,6 +120,8 @@ Let's say you want to print two of the same label. By entering the desired amoun
 
 If you are printing labels for multiple items at once, such as for an entire selection of parts, this amount is applied to all items. For example, lets print two labels for each of those four capacitors:
 
+TODO: change here
+
 ![Selection of multiple items to print labels for](https://raw.githubusercontent.com/melektron/inventree-adv-sheet-label/main/images/multi_item_select.png)
 ![Configuration for multi label print](https://raw.githubusercontent.com/melektron/inventree-adv-sheet-label/main/images/multi_label_print_config.png)
 
@@ -198,6 +205,13 @@ This section describes the settings available in the plugins settings page.
 ### Default sheet layout
 
 This setting allows you to specify which sheet layout is selected by default when opening the printing dialog. It makes sense to set this either to some *Auto* option or to the layout you are using the most. The default is ```Auto (round)```, which is probably fine for most use-cases.
+
+
+## Common Issues
+
+### "No matching distributionfound" / "Could not find a version that satisfies the requirement"
+
+This means that the Python version installed on the InvenTree host is too old for the plugin. This error may occur when trying to install plugin versions up to `1.2.2` on an InvenTree instance installed bare-metal or via the package installer on a system with Python 3.9. This is because the plugin used to require Python >= 3.11, which is the version used in the containers, therefore working for most setups. As of plugin version `1.3.0`, the version requirement has been reduced, and this should no longer occur.
 
 
 ## Contribution
