@@ -14,8 +14,8 @@ A clear and concise description of what the bug or problem is. For example a pro
 **To Reproduce**
 
 Configuration to reproduce the behavior:
-- Screenshot of the template configuration in admin portal (https://your.inventree.url/admin/report/labeltemplate/): 
-- The label template file used (can be downloaded from the admin page): (attach the file to the PR)
+- Screenshot of the template configuration in admin settings: 
+- The label template code used (can be copied from the admin settings): (attach as file to the PR or add code block)
 - Item type printed: Part/Stock Item/Stock Location/...
 - Sheet layout selection: 
 - Number of labels: 

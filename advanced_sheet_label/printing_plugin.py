@@ -247,19 +247,19 @@ class AdvancedLabelSheetPlugin(LabelPrintingMixin, SettingsMixin, InvenTreePlugi
             sheet_layout, specified, is_exact = self._find_closest_match(label, sheet_layout_code == "auto_round")
             if not is_exact and not ignore_size_mismatch:
                 if specified:
-                    raise ValidationError(f"The layout specified in the template metadata (<i>{str(sheet_layout)}</i> ) does not have the correct label size. Select '<i>Ignore label size mismatch</i>' to use it anyway.")
+                    raise ValidationError(f"The layout specified in the template metadata ('{str(sheet_layout)}') does not have the correct label size. Select 'Ignore label size mismatch' to use it anyway.")
                 else:
-                    raise ValidationError(f"The template ({label.width}mm x {label.height}mm) does not specify any valid sheet layout to use and no exact size match was found. <i>{str(sheet_layout)}</i> is the closest contender. Select '<i>Ignore label size mismatch</i>' to use it.")
+                    raise ValidationError(f"The template ({label.width}mm x {label.height}mm) does not specify any valid sheet layout to use and no exact size match was found. '{str(sheet_layout)}' is the closest contender. Select 'Ignore label size mismatch' to use it.")
         else:   # explicit layout selection
             try:
                 sheet_layout = LAYOUTS[sheet_layout_code]
             except IndexError:
-                raise ValidationError(f"Sheet layout '<i>{sheet_layout_code}</i>' does not exist.")
+                raise ValidationError(f"Sheet layout '{sheet_layout_code}' does not exist.")
 
             if ((sheet_layout.label_height != label.height 
                 or sheet_layout.label_width != label.width)
                 and not ignore_size_mismatch):
-                raise ValidationError(f"Label size ({label.width}mm x {label.height}mm) does not match the label size required for the selected layout (<i>{str(sheet_layout)}</i>). Select '<i>Ignore label size mismatch</i>' to continue anyway.")
+                raise ValidationError(f"Label size ({label.width}mm x {label.height}mm) does not match the label size required for the selected layout ('{str(sheet_layout)}'). Select 'Ignore label size mismatch' to continue anyway.")
 
         # generate the actual list of labels to print by prepending the
         # required number of skipped null labels and multiplying each lable by the
