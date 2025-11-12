@@ -24,5 +24,9 @@ Issues = "https://github.com/melektron/inventree-adv-sheet-label/issues"
 [tool.setuptools]
 packages = ["advanced_sheet_label"]
 
+[tool.pyright]
+pythonVersion = "3.9"
+reportIncompatibleVariableOverride = false
+
 [project.entry-points."inventree_plugins"]
 AdvancedSheetLabel = 'advanced_sheet_label.printing_plugin:AdvancedLabelSheetPlugin'

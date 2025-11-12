@@ -293,7 +293,10 @@ class AdvancedLabelSheetPlugin(LabelPrintingMixin, SettingsMixin, InvenTreePlugi
 
         # render HTML to PDF
         html = weasyprint.HTML(string=html_data)
-        return html.render().write_pdf()
+        data = html.render().write_pdf()
+        if data is None:
+            raise RuntimeError("Label PDF generation failed")
+        return data
 
     def print_page(self, label: LabelTemplate, items: list, request, sheet_layout: SheetLayout):
         """Generate a single page of labels.
