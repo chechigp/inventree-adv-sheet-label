@@ -3,6 +3,8 @@ Label printing plugin which supports printing multiple labels on a single page
 arranged according to standard label sheets.
 """
 
+from __future__ import annotations
+
 import logging
 import math
 
