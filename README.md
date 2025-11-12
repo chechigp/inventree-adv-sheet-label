@@ -23,12 +23,18 @@ A label printing plugin for [InvenTree](https://inventree.org) which provides su
 
 ## Installation
 
-> Note:
-> This plugin currently supports the following InvenTree versions:
+> [!NOTE]
+> The latest version of this plugin currently supports the following InvenTree versions:
+> - **1.0.x** (tested with version **1.0.5**)
+> - **1.1.x** (tested with version **1.1.3**)
+> 
+> For older InvenTree versions, use version `1.2.2`, which supports the following InvenTree versions:
 > - **0.15.x**
 > - **0.16.x** (tested with version **0.16.5**)
 > - **0.17.x** (tested with version **0.17.14**)
-> Some older or newer versions might also work, but have not been tested. 
+> Some even older or newer versions might also work, but have not been tested. 
+> 
+> If you are having trouble installing, see [Common Issues](#common-issues) for possible solutions or create an issue.
 
 The simplest way of installing is by using the ```Install Plugin``` button on the InvenTree ```Plugin Settings``` page and then entering the package name:
 
@@ -97,7 +103,7 @@ Currently supported layouts:
 This selection is limited to whatever users of this plugin have contributed. If the paper layout you need is not included, please file an [Issue with the "Sheet Layout" template](https://github.com/melektron/inventree-adv-sheet-label/issues/new?assignees=melektron&labels=sheet+layout&projects=&template=sheet-layout.md&title=New+Sheet+layout%3A+%5Blayout+name%5D) or - even better - contribute it yourself. See the [Adding new layouts](#adding-new-layouts) section for details.
 
 You can also select one of the two ```Auto``` sheet layout presets. These will automatically select the correct sheet layout for the label template you are printing. This is done in one of three ways:
-- If you have a specific layout that's always used for a specific template, you can add the ```{"sheet_layout": "..."}``` metadata key to your label template configuration (replace ... with the identifier of the layout. This might not be the same as the display name, see [here](https://github.com/melektron/inventree-adv-sheet-label/blob/main/advanced_sheet_label/layouts.py#L77) what the identifier is). This is the cleanest way configure the correct layout for your templates.
+- If you have a specific layout that's always used for a specific template, you can add the ```{"sheet_layout": "..."}``` metadata key to your label template configuration (replace ... with the identifier of the layout. This might not be the same as the display name, see [here](https://github.com/melektron/inventree-adv-sheet-label/blob/main/advanced_sheet_label/layouts.py#L77) what the identifier is). This is the cleanest way configure the correct layout for your templates, but it is no longer easily available as of InvenTree version `1.0.0` due to the Django admin UI being removed.
 - If the selected template template has no such metadata, the plugin will attempt to find a layout with exactly the required label size and use that one. If multiple matches are found, the first one is selected while preferring ones with round or sharp corners depending on your selection.
 - If no exact matches are found, the closest layout that can fit your label template will be selected and shown to the user in an error message. The user can then decide to use this option by selecting the ['Ignore label size mismatch'](#ignore-label-size-mismatch) switch. 
 
@@ -114,6 +120,8 @@ Let's say you want to print two of the same label. By entering the desired amoun
 ![Top of a page with two identical labels printed on it](https://raw.githubusercontent.com/melektron/inventree-adv-sheet-label/main/images/two_identical_labels.png)
 
 If you are printing labels for multiple items at once, such as for an entire selection of parts, this amount is applied to all items. For example, lets print two labels for each of those four capacitors:
+
+TODO: change here
 
 ![Selection of multiple items to print labels for](https://raw.githubusercontent.com/melektron/inventree-adv-sheet-label/main/images/multi_item_select.png)
 ![Configuration for multi label print](https://raw.githubusercontent.com/melektron/inventree-adv-sheet-label/main/images/multi_label_print_config.png)
@@ -151,7 +159,7 @@ To ensure the desired result, the plugin automatically check whether the size of
 
 If that is not the case, the user is presented with an error message. This can happen in a few different scenarios:
 - Manually selecting a sheet layout that doesn't match the label template: ![Error selected layout size does not match](https://raw.githubusercontent.com/melektron/inventree-adv-sheet-label/main/images/err_selected_layout.png)
-- When automatic layout selection is enabled and the label template specifies a sheet layout but its label size does not match that of the template: ![Error template metadata layout does not have the expected size](https://raw.githubusercontent.com/melektron/inventree-adv-sheet-label/main/images/err_metadata_layout.png)
+- When automatic layout selection is enabled and the label template specifies a sheet layout but its label size does not match that of the template (no longer relevant as of InvenTree `1.0.0`): ![Error template metadata layout does not have the expected size](https://raw.githubusercontent.com/melektron/inventree-adv-sheet-label/main/images/err_metadata_layout.png)
 - When automatic layout selection is enabled but the label template doesn't specify any layout in the metadata and no exact size match was found: ![Error no metadata and no exact size match found](https://raw.githubusercontent.com/melektron/inventree-adv-sheet-label/main/images/err_no_size_match.png)
 
 In any of these cases, you might want to continue anyway, e.g. because you may not have the correct sheet at hand. To do so, you can enable the ```Ignore label size mismatch``` switch to override these safety checks and print anyway. If the label template doesn't fit exactly, it is aligned at the top left corner of the physical label. The result might look something like this:
@@ -200,6 +208,13 @@ This section describes the settings available in the plugins settings page.
 This setting allows you to specify which sheet layout is selected by default when opening the printing dialog. It makes sense to set this either to some *Auto* option or to the layout you are using the most. The default is ```Auto (round)```, which is probably fine for most use-cases.
 
 
+## Common Issues
+
+### "No matching distributionfound" / "Could not find a version that satisfies the requirement"
+
+This means that the Python version installed on the InvenTree host is too old for the plugin. This error may occur when trying to install plugin versions up to `1.2.2` on an InvenTree instance installed bare-metal or via the package installer on a system with Python 3.9. This is because the plugin used to require Python >= 3.11, which is the version used in the containers, therefore working for most setups. As of plugin version `1.3.0`, the version requirement has been reduced, and this should no longer occur.
+
+
 ## Contribution
 
 If you have ideas for new features, found typos, have encountered a bug or want to add more sheet layouts, feel free to contribute to this plugin by [filing an Issue](https://github.com/melektron/inventree-adv-sheet-label/issues/new/choose) or [creating a Pull Request](https://github.com/melektron/inventree-adv-sheet-label/compare). See [Plugin development setup](#plugin-development-setup) to learn how you can set up your development environment to test your modifications.
@@ -210,11 +225,11 @@ See the below information and instructions for common contribution types.
 
 If you have encountered a problem or a bug with the plugin, please file an [Issue with the Bug Report template](https://github.com/melektron/inventree-adv-sheet-label/issues/new?assignees=melektron&labels=bug&projects=&template=bug-report.md&title=). 
 
-The template requires you to provide a screenshot of your label template configuration. You can get this by going to https://your.inventree.url/admin/label/ for InvenTree 0.15.x or https://your.inventree.url/admin/report/labeltemplate/ for InvenTree 0.16.x and selecting the template you were trying to print when the problem ocurred. You need administrator privileges to do this. If you don't have them, ask your administrator. This page might look something like this:
+The template requires you to provide a screenshot of your label template configuration. You can get this by going to https://your.inventree.url/web/settings/admin/labels and `Edit`ing the template in question. You need administrator privileges to do this. If you don't have them, ask your administrator. This page might look something like this:
 
 ![Example template configuration screenshot](https://raw.githubusercontent.com/melektron/inventree-adv-sheet-label/main/images/template_config_example.png)
 
-In addition to this screenshot, you will be asked to attach the label template file which can be downloaded by clicking on the link next to "Currently:" in the above shown page. Please make sure this file doesn't contain any confidential data and remove it if it does.
+In addition to this screenshot, you will be asked to attach the label template file which can be downloaded by clicking on the Template in the list and copying the code. Please make sure this file doesn't contain any confidential data and remove it if it does.
 
 You will also be asked to provide some other information about when and how the bug ocurred which is described in the template.
 
@@ -274,7 +289,8 @@ To install the modified plugin in your InvenTree instance, simply enter **YOUR**
 
 > Make sure to uninstall the official plugin before you install your fork, otherwise they will conflict!
 
-> It appears that this doesn't work. It also didn't seem to work when placing the "git+..." URL in package field in the UI. For me, I have been able to install the plugin directly from GitHub by stopping the InvenTree server and then installing directly using pip:
+> Plugins installed in this way seem to not be added to plugins.txt file properly in InvenTree version `1.0.5+`. For me, I have been able to install the plugin directly from GitHub by stopping the InvenTree server, adding the URL to the plugins.txt file and then running `invoke plugins`.
+> Alternatively, you can install it directly using pip:
 > ```bash
 > pip uninstall inventree-adv-sheet-label # uninstall normal package
 > pip install git+https://github.com/melektron/inventree-adv-sheet-label.git

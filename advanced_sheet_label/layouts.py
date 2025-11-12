@@ -9,6 +9,8 @@ List of sheet label paper layouts
 
 import dataclasses
 
+from typing import Optional
+
 
 @dataclasses.dataclass
 class PaperSize:
@@ -27,9 +29,9 @@ class SheetLayout:
     rows: int
     column_spacing: float   # mm
     row_spacing: float      # mm
-    corner_radius: float                # mm, 0 means sharp corners
-    spacing_top: float | None = None    # None means automatic centering
-    spacing_left: float | None = None   # None means automatic centering
+    corner_radius: float    # mm, 0 means sharp corners
+    spacing_top: Optional[float] = None    # None means automatic centering
+    spacing_left: Optional[float] = None   # None means automatic centering
 
     @property
     def cells(self) -> int:

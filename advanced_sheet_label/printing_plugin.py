@@ -3,6 +3,8 @@ Label printing plugin which supports printing multiple labels on a single page
 arranged according to standard label sheets.
 """
 
+from __future__ import annotations
+
 import logging
 import math
 
@@ -17,14 +19,7 @@ import weasyprint
 from rest_framework import serializers
 from plugin import InvenTreePlugin
 from plugin.mixins import LabelPrintingMixin, SettingsMixin
-
-version_pre_0_16_x: bool = ...
-try:
-    from label.models import LabelOutput, LabelTemplate     # for current stable version (0.15.x)
-    version_pre_0_16_x = True
-except ImportError:
-    from report.models import LabelOutput, LabelTemplate    # for newer versions (0.16.x)
-    version_pre_0_16_x = False
+from report.models import DataOutput, LabelTemplate
 
 from .layouts import SheetLayout, LAYOUTS, LAYOUT_SELECT_OPTIONS
 
@@ -97,7 +92,6 @@ class AdvancedLabelPrintingOptionsSerializer(serializers.Serializer):
     )
 
 
-
 class AdvancedLabelSheetPlugin(LabelPrintingMixin, SettingsMixin, InvenTreePlugin):
     """Plugin for advanced label sheet printing.
 
@@ -108,7 +102,7 @@ class AdvancedLabelSheetPlugin(LabelPrintingMixin, SettingsMixin, InvenTreePlugi
     NAME = 'AdvancedLabelSheet'
     TITLE = 'Advanced Label Sheet Printer'
     DESCRIPTION = 'Arrays multiple labels onto single, standard layout label sheets with additional useful features'
-    VERSION = '1.2.2'
+    VERSION = '1.3.0'
     AUTHOR = 'InvenTree contributors & melektron'
 
     BLOCKING_PRINT = True
@@ -214,36 +208,19 @@ class AdvancedLabelSheetPlugin(LabelPrintingMixin, SettingsMixin, InvenTreePlugi
 
         # no exact matches found
         return closest_match[1], False, False
-    
-    if version_pre_0_16_x:
-        def print_labels(
-            self, label: LabelTemplate, items: list, request: Request, **kwargs
-        ):
-            """
-            Printing interface for InvenTree 0.15.x (current stable)
-            """
-            output_file = ContentFile(self._print_labels(label, items, request, **kwargs), 'labels.pdf')
-            output = LabelOutput.objects.create(label=output_file, user=request.user)
-            return JsonResponse({
-                'file': output.label.url,
-                'success': True,
-                'message': f'{len(items)} labels generated',
-            })
-        
-    else:
-        def print_labels(
-            self, label: LabelTemplate, output: LabelOutput, items: list, request, **kwargs
-        ):
-            """
-            Printing interface for InvenTree 0.16.x (currently not released yet)
-            """
-            output.output = ContentFile(self._print_labels(label, items, request, **kwargs), 'labels.pdf')
-            output.progress = 100
-            output.complete = True
-            output.save()
+
+    def print_labels(
+        self, label: LabelTemplate, output: DataOutput, items: list, request: Request, **kwargs
+    ):
+        output.mark_complete(
+            output=ContentFile(
+                self._print_labels(label, items, request, **kwargs), 
+                'labels.pdf'
+            )
+        )
         
     def _print_labels(
-        self, label: LabelTemplate, input_items: list, request, **kwargs
+        self, label: LabelTemplate, input_items: list, request: Request, **kwargs
     ) -> bytes:
         """
         Handle printing of the provided labels.
@@ -272,19 +249,19 @@ class AdvancedLabelSheetPlugin(LabelPrintingMixin, SettingsMixin, InvenTreePlugi
             sheet_layout, specified, is_exact = self._find_closest_match(label, sheet_layout_code == "auto_round")
             if not is_exact and not ignore_size_mismatch:
                 if specified:
-                    raise ValidationError(f"The layout specified in the template metadata (<i>{str(sheet_layout)}</i> ) does not have the correct label size. Select '<i>Ignore label size mismatch</i>' to use it anyway.")
+                    raise ValidationError(f"The layout specified in the template metadata ('{str(sheet_layout)}') does not have the correct label size. Select 'Ignore label size mismatch' to use it anyway.")
                 else:
-                    raise ValidationError(f"The template ({label.width}mm x {label.height}mm) does not specify any valid sheet layout to use and no exact size match was found. <i>{str(sheet_layout)}</i> is the closest contender. Select '<i>Ignore label size mismatch</i>' to use it.")
+                    raise ValidationError(f"The template ({label.width}mm x {label.height}mm) does not specify any valid sheet layout to use and no exact size match was found. '{str(sheet_layout)}' is the closest contender. Select 'Ignore label size mismatch' to use it.")
         else:   # explicit layout selection
             try:
                 sheet_layout = LAYOUTS[sheet_layout_code]
             except IndexError:
-                raise ValidationError(f"Sheet layout '<i>{sheet_layout_code}</i>' does not exist.")
+                raise ValidationError(f"Sheet layout '{sheet_layout_code}' does not exist.")
 
             if ((sheet_layout.label_height != label.height 
                 or sheet_layout.label_width != label.width)
                 and not ignore_size_mismatch):
-                raise ValidationError(f"Label size ({label.width}mm x {label.height}mm) does not match the label size required for the selected layout (<i>{str(sheet_layout)}</i>). Select '<i>Ignore label size mismatch</i>' to continue anyway.")
+                raise ValidationError(f"Label size ({label.width}mm x {label.height}mm) does not match the label size required for the selected layout ('{str(sheet_layout)}'). Select 'Ignore label size mismatch' to continue anyway.")
 
         # generate the actual list of labels to print by prepending the
         # required number of skipped null labels and multiplying each lable by the
@@ -318,7 +295,10 @@ class AdvancedLabelSheetPlugin(LabelPrintingMixin, SettingsMixin, InvenTreePlugi
 
         # render HTML to PDF
         html = weasyprint.HTML(string=html_data)
-        return html.render().write_pdf()
+        data = html.render().write_pdf()
+        if data is None:
+            raise RuntimeError("Label PDF generation failed")
+        return data
 
     def print_page(self, label: LabelTemplate, items: list, request, sheet_layout: SheetLayout):
         """Generate a single page of labels.
@@ -355,14 +335,9 @@ class AdvancedLabelSheetPlugin(LabelPrintingMixin, SettingsMixin, InvenTreePlugi
                     try:
                         # Render the individual label template
                         # Note that we disable @page styling for this
-                        if version_pre_0_16_x:
-                            cell = label.render_as_string(
-                                request, target_object=items[idx], insert_page_style=False
-                            )
-                        else:
-                            cell = label.render_as_string(
-                                items[idx], request, insert_page_style=False
-                            )
+                        cell = label.render_as_string(
+                            items[idx], request, insert_page_style=False
+                        )
                         html += cell
                     except Exception as exc:
                         _log.exception('Error rendering label: %s', str(exc))
