@@ -26,6 +26,7 @@ A label printing plugin for [InvenTree](https://inventree.org) which provides su
 > [!NOTE]
 > The latest version of this plugin currently supports the following InvenTree versions:
 > - **1.0.x** (tested with version **1.0.5**)
+> - **1.1.x** (tested with version **1.1.3**)
 > 
 > For older InvenTree versions, use version `1.2.2`, which supports the following InvenTree versions:
 > - **0.15.x**
@@ -288,7 +289,7 @@ To install the modified plugin in your InvenTree instance, simply enter **YOUR**
 
 > Make sure to uninstall the official plugin before you install your fork, otherwise they will conflict!
 
-> Plugins installed in this way seem to not be added to plugins.txt file properly in InvenTree version `1.0.5`. For me, I have been able to install the plugin directly from GitHub by stopping the InvenTree server, adding the URL to the plugins.txt file and then running `invoke plugins`.
+> Plugins installed in this way seem to not be added to plugins.txt file properly in InvenTree version `1.0.5+`. For me, I have been able to install the plugin directly from GitHub by stopping the InvenTree server, adding the URL to the plugins.txt file and then running `invoke plugins`.
 > Alternatively, you can install it directly using pip:
 > ```bash
 > pip uninstall inventree-adv-sheet-label # uninstall normal package
