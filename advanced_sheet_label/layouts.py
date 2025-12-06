@@ -247,6 +247,17 @@ LAYOUTS = {
         row_spacing=5.0,
         corner_radius=2.0,
     ),   
+    "8698": SheetLayout(
+        display_name="8698",
+        page_size=PAPER_SIZES["A4"],
+        label_width=52.5,
+        label_height=29.7,
+        columns=4,
+        rows=10,
+        column_spacing=0,
+        row_spacing=0,
+        corner_radius=0
+    ),
 }
 
 LAYOUT_SELECT_OPTIONS = [
