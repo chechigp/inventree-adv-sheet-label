@@ -104,6 +104,19 @@ LAYOUTS = {
         spacing_top=12,                      # Spacing of top margin
         spacing_left=20.1                         # Spacing of left margin
     ),
+    "4716": SheetLayout(
+        display_name="4716",
+        page_size=PAPER_SIZES["A4"],
+        label_width=38,
+        label_height=21.2,
+        columns=5,
+        rows=13,
+        column_spacing=0,
+        row_spacing=0,
+        corner_radius=0
+        spacing_top=10.5,                      # Spacing of top margin
+        spacing_left=10                         # Spacing of left margin
+    ),
     "4780": SheetLayout(
         display_name="4780",
         page_size=PAPER_SIZES["A4"],
