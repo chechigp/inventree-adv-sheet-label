@@ -113,7 +113,7 @@ LAYOUTS = {
         rows=13,
         column_spacing=0,
         row_spacing=0,
-        corner_radius=0
+        corner_radius=0,
         spacing_top=10.5,                      # Spacing of top margin
         spacing_left=10                         # Spacing of left margin
     ),
