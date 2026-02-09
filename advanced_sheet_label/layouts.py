@@ -111,9 +111,11 @@ LAYOUTS = {
         label_height=21.2,
         columns=5,
         rows=13,
-        column_spacing=0,
-        row_spacing=0,
-        corner_radius=0
+        column_spacing=0,                     # space between two columns, not margins
+        row_spacing=0,                        # space between two rows, not margins
+        corner_radius=0,                        # radius of label corners
+        spacing_top=11,                      # Spacing of top margin
+        spacing_left=10                         # Spacing of left margin
     ),
     "4780": SheetLayout(
         display_name="4780",
